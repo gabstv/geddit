@@ -131,3 +131,26 @@ func (s OAuthSession) RevokeToken() error {
 
 	return nil
 }
+
+func (s OAuthSession) Me() (*Redditor, error) {
+	req := &oauthRequest{
+		accessToken: s.accessToken,
+		url:         "https://oauth.reddit.com/api/v1/me",
+		useragent:   s.useragent,
+	}
+	body, err := req.getResponse()
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Data Redditor
+	}
+	r := &Response{}
+	err = json.NewDecoder(body).Decode(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &r.Data, nil
+}
