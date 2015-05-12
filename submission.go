@@ -26,12 +26,11 @@ type Submission struct {
 	DateCreated  float32 `json:"created_utc"`
 	NumComments  int     `json:"num_comments"`
 	Score        int     `json:"score"`
-	Ups          int     `json:"ups"`
-	Downs        int     `json:"downs"`
 	IsNSFW       bool    `json:"over_18"`
 	IsSelf       bool    `json:"is_self"`
 	WasClicked   bool    `json:"clicked"`
 	IsSaved      bool    `json:"saved"`
+	IsSticky     bool    `json:"stickied"`
 	BannedBy     *string `json:"banned_by"`
 }
 
