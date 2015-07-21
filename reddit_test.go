@@ -83,7 +83,7 @@ func TestSubmit(t *testing.T) {
 		// there is a submission delay!
 		// needs to find a way to test both without the time delay, maybe two accounts
 		//
-		//err = session.Submit(NewLinkSubmission(subreddit.Name, "CAPTCHA TESTING LINK", "https://github.com/jzelinskie/reddit", true, &Captcha{iden, captcha}))
+		//err = session.Submit(NewLinkSubmission(subreddit.Name, "CAPTCHA TESTING LINK", "https://github.com/jzelinskie/geddit", true, &Captcha{iden, captcha}))
 		//if err != nil {
 		//	t.Error(err)
 		//}
@@ -98,7 +98,7 @@ func TestSubmit(t *testing.T) {
 		// there is a submission delay!
 		// needs to find a way to test both without the time delay, maybe two accounts
 		//
-		//err = session.Submit(NewLinkSubmission(subreddit.Name, "TESTING LINK", "https://github.com/jzelinskie/reddit", true, &Captcha{}))
+		//err = session.Submit(NewLinkSubmission(subreddit.Name, "TESTING LINK", "https://github.com/jzelinskie/geddit", true, &Captcha{}))
 		//if err != nil {
 		//	t.Error(err)
 		//}
