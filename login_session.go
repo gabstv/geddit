@@ -150,6 +150,54 @@ func (s LoginSession) Frontpage(sort popularitySort, params ListingOptions) ([]*
 	return submissions, nil
 }
 
+// SubredditSubmissions returns the submissions on the given subreddit.
+func (s LoginSession) SubredditSubmissions(subreddit string, sort popularitySort, params ListingOptions) ([]*Submission, error) {
+	v, err := query.Values(params)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl := "http://www.reddit.com"
+
+	// If subbreddit given, add to URL
+	if subreddit != "" {
+		baseUrl += "/r/" + subreddit
+	}
+
+	redditUrl := fmt.Sprintf(baseUrl+"/%s.json?%s", sort, v.Encode())
+
+	req := request{
+		url:       redditUrl,
+		cookie:    s.cookie,
+		useragent: s.useragent,
+	}
+	body, err := req.getResponse()
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Data struct {
+			Children []struct {
+				Data *Submission
+			}
+		}
+	}
+
+	r := new(Response)
+	err = json.NewDecoder(body).Decode(r)
+	if err != nil {
+		return nil, err
+	}
+
+	submissions := make([]*Submission, len(r.Data.Children))
+	for i, child := range r.Data.Children {
+		submissions[i] = child.Data
+	}
+
+	return submissions, nil
+}
+
 // Me returns an up-to-date redditor object of the logged-in user.
 func (s LoginSession) Me() (*Redditor, error) {
 	req := &request{
