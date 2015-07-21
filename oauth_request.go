@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type oauthRequest struct {
@@ -34,8 +35,12 @@ func (r oauthRequest) getResponse() (*bytes.Buffer, error) {
 	req.Header.Set("User-Agent", r.useragent)
 	req.Header.Set("Authorization", "bearer "+r.accessToken)
 
+	cl := &http.Client{
+		Timeout: time.Second * 30,
+	}
+
 	// Handle the request
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := cl.Do(req)
 	if err != nil {
 		return nil, err
 	}

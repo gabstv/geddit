@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type request struct {
@@ -40,8 +41,12 @@ func (r request) getResponse() (*bytes.Buffer, error) {
 	}
 	req.Header.Set("User-Agent", r.useragent)
 
+	cl := &http.Client{
+		Timeout: time.Second * 30,
+	}
+
 	// Handle the request
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := cl.Do(req)
 	if err != nil {
 		return nil, err
 	}
