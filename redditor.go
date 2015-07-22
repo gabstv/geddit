@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
 )
 
 type Redditor struct {
@@ -50,24 +51,20 @@ func (r *OARedditor) String() string {
 	return fmt.Sprintf("%s (%d-%d)", r.Name, r.LinkKarma, r.CommentKarma)
 }
 
-func (r *OARedditor) Submitted() ([]Submission, error) {
+func (r *OARedditor) Submitted(hideVotedLinks bool, limit, count int, popsort popularitySort, agesort ageSort, params ...Param) ([]Submission, error) {
 	vals := url.Values{}
-	vals.Set("show", "all")
-	vals.Set("limit", "3")
-	vals.Set("sort", "new")
-	vals.Set("t", "all")
-	vals.Set("username", r.Name)
-	req := &oauthRequest{
-		accessToken: r.session.accessToken,
-		url:         ourl("/user/%s/submitted", r.Name),
-		useragent:   r.session.useragent,
-		values:      &vals,
+	if !hideVotedLinks {
+		vals.Set("show", "all")
 	}
-	log.Println(req.url)
-	body, err := req.getResponse()
+	vals.Set("limit", strconv.Itoa(limit))
+	vals.Set("sort", string(popsort))
+	vals.Set("t", string(agesort))
+	vals.Set("username", r.Name)
+	for _, v := range params {
+		vals.Set(v.Key, v.Value)
+	}
+	body, err := r.session.Get(&vals, "/user/%s/submitted", r.Name)
 	if err != nil {
-		//return nil, err
-		log.Println("SUBMITTED ERROR", err)
 		return nil, err
 	}
 

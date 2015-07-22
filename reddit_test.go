@@ -1,6 +1,7 @@
 package geddit
 
 import (
+	"flag"
 	"fmt"
 	"github.com/toqueteos/webbrowser"
 	"io/ioutil"
@@ -11,7 +12,20 @@ import (
 	"time"
 )
 
+var (
+	testall bool
+)
+
+func init() {
+	flag.BoolVar(&testall, "all", false, "-all\n Test everything.")
+	flag.Parse()
+}
+
 func TestSubmit(t *testing.T) {
+
+	if !testall {
+		return
+	}
 
 	session, err := NewLoginSession(
 		"redditgolang",

@@ -6,6 +6,7 @@
 package geddit
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -135,13 +136,44 @@ func (s OAuthSession) RevokeToken() error {
 	return nil
 }
 
-func (s *OAuthSession) Me() (*OARedditor, error) {
+func (s *OAuthSession) Get(params *url.Values, urlformat string, urlvars ...interface{}) (*bytes.Buffer, error) {
+	surl := ourl(urlformat, urlvars...)
 	req := &oauthRequest{
 		accessToken: s.accessToken,
-		url:         OAUTH_BASE_URL + "/api/v1/me",
+		url:         OAUTH_BASE_URL + surl,
 		useragent:   s.useragent,
+		action:      GET,
+		values:      params,
 	}
-	body, err := req.getResponse()
+	return req.getResponse()
+}
+
+func (s *OAuthSession) Post(params *url.Values, urlformat string, urlvars ...interface{}) (*bytes.Buffer, error) {
+	surl := ourl(urlformat, urlvars...)
+	req := &oauthRequest{
+		accessToken: s.accessToken,
+		url:         OAUTH_BASE_URL + surl,
+		useragent:   s.useragent,
+		action:      POST,
+		values:      params,
+	}
+	return req.getResponse()
+}
+
+func (s *OAuthSession) Patch(params *url.Values, urlformat string, urlvars ...interface{}) (*bytes.Buffer, error) {
+	surl := ourl(urlformat, urlvars...)
+	req := &oauthRequest{
+		accessToken: s.accessToken,
+		url:         OAUTH_BASE_URL + surl,
+		useragent:   s.useragent,
+		action:      PATCH,
+		values:      params,
+	}
+	return req.getResponse()
+}
+
+func (s *OAuthSession) Me() (*OARedditor, error) {
+	body, err := s.Get(nil, "/api/v1/me")
 	if err != nil {
 		return nil, err
 	}
@@ -159,12 +191,7 @@ func (s *OAuthSession) Me() (*OARedditor, error) {
 }
 
 func (s *OAuthSession) User(username string) (*OARedditor, error) {
-	req := &oauthRequest{
-		accessToken: s.accessToken,
-		url:         ourl("/user/%s/about", username),
-		useragent:   s.useragent,
-	}
-	body, err := req.getResponse()
+	body, err := s.Get(nil, "/user/%s/about", username)
 	if err != nil {
 		return nil, err
 	}

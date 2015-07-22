@@ -11,12 +11,13 @@ import (
 	"time"
 )
 
-type oauthMethod string
+type method string
 
 const (
-	OAUTH_BASE_URL             = "https://oauth.reddit.com"
-	GET            oauthMethod = "GET"
-	POST           oauthMethod = "POST"
+	OAUTH_BASE_URL        = "https://oauth.reddit.com"
+	GET            method = "GET"
+	POST           method = "POST"
+	PATCH          method = "PATCH"
 )
 
 type oauthRequest struct {
@@ -24,7 +25,7 @@ type oauthRequest struct {
 	url         string
 	useragent   string
 	values      *url.Values
-	action      oauthMethod
+	action      method
 }
 
 func ourl(format string, args ...interface{}) string {
@@ -35,14 +36,20 @@ func (r oauthRequest) getResponse() (*bytes.Buffer, error) {
 	// Determine the HTTP action.
 	var buffer bytes.Buffer
 	var action, finalurl string
-	if r.action != POST {
+	if r.action == GET {
 		action = "GET"
 		finalurl = r.url
 		if r.values != nil {
 			finalurl = r.url + "?" + r.values.Encode()
 		}
-	} else {
+	} else if r.action == POST {
 		action = "POST"
+		finalurl = r.url
+		if r.values != nil {
+			buffer.WriteString(r.values.Encode())
+		}
+	} else {
+		action = "PATCH"
 		finalurl = r.url
 		if r.values != nil {
 			buffer.WriteString(r.values.Encode())

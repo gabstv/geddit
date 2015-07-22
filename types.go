@@ -40,7 +40,7 @@ func NewTextSubmission(sr, title, text string, replies bool, c *Captcha) *newSub
 	return &newSubmission{sr, title, text, true, replies, true, true, c}
 }
 
-// popularitySort represents the possible ways to sort submissions by popularity.
+// PopularitySort represents the possible ways to sort submissions by popularity.
 type popularitySort string
 
 const (
@@ -72,6 +72,11 @@ type ListingOptions struct {
 	Count   int    `url:"count,omitempty"`
 	Show    string `url:"show,omitempty"`
 	Article string `url:"article,omitempty"`
+}
+
+type Param struct {
+	Key   string
+	Value string
 }
 
 // Voter represents something that can be voted on reddit.com.
