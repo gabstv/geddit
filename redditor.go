@@ -7,7 +7,7 @@ package geddit
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	//"log"
 	"net/url"
 	"strconv"
 )
@@ -51,7 +51,7 @@ func (r *OARedditor) String() string {
 	return fmt.Sprintf("%s (%d-%d)", r.Name, r.LinkKarma, r.CommentKarma)
 }
 
-func (r *OARedditor) Submitted(hideVotedLinks bool, limit, count int, popsort popularitySort, agesort ageSort, params ...Param) ([]Submission, error) {
+func (r *OARedditor) Submitted(hideVotedLinks bool, limit int, popsort popularitySort, agesort ageSort, params ...Param) ([]Submission, error) {
 	vals := url.Values{}
 	if !hideVotedLinks {
 		vals.Set("show", "all")
@@ -68,7 +68,7 @@ func (r *OARedditor) Submitted(hideVotedLinks bool, limit, count int, popsort po
 		return nil, err
 	}
 
-	log.Println(body.String())
+	//log.Println(body.String())
 
 	type SubContainer struct {
 		Data Submission `json:"data"`

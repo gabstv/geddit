@@ -140,7 +140,7 @@ func (s *OAuthSession) Get(params *url.Values, urlformat string, urlvars ...inte
 	surl := ourl(urlformat, urlvars...)
 	req := &oauthRequest{
 		accessToken: s.accessToken,
-		url:         OAUTH_BASE_URL + surl,
+		url:         surl,
 		useragent:   s.useragent,
 		action:      GET,
 		values:      params,
@@ -152,7 +152,7 @@ func (s *OAuthSession) Post(params *url.Values, urlformat string, urlvars ...int
 	surl := ourl(urlformat, urlvars...)
 	req := &oauthRequest{
 		accessToken: s.accessToken,
-		url:         OAUTH_BASE_URL + surl,
+		url:         surl,
 		useragent:   s.useragent,
 		action:      POST,
 		values:      params,
@@ -164,7 +164,7 @@ func (s *OAuthSession) Patch(params *url.Values, urlformat string, urlvars ...in
 	surl := ourl(urlformat, urlvars...)
 	req := &oauthRequest{
 		accessToken: s.accessToken,
-		url:         OAUTH_BASE_URL + surl,
+		url:         surl,
 		useragent:   s.useragent,
 		action:      PATCH,
 		values:      params,
