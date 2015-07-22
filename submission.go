@@ -41,7 +41,7 @@ func (h Submission) replyID() string  { return h.FullID }
 
 // FullPermalink returns the full URL of a submission.
 func (h *Submission) FullPermalink() string {
-	return "http://reddit.com" + h.Permalink
+	return BASE_URL + h.Permalink
 }
 
 // String returns the string representation of a submission.

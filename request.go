@@ -7,11 +7,20 @@ package geddit
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
 )
+
+const (
+	BASE_URL = "http://www.reddit.com"
+)
+
+func rurl(format string, args ...interface{}) string {
+	return fmt.Sprintf(BASE_URL+format, args...)
+}
 
 type request struct {
 	url       string
