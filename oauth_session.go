@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -66,10 +67,10 @@ func (s *OAuthSession) newToken(postValues *url.Values) error {
 	client := &http.Client{}
 
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return errors.New(resp.Status)
@@ -97,6 +98,8 @@ func (s *OAuthSession) newToken(postValues *url.Values) error {
 	s.tokenType = r.TokenType
 	s.expiresIn = r.ExpiresIn
 	s.scope = r.Scope
+
+	log.Println(s.scope)
 
 	return nil
 }
@@ -132,10 +135,10 @@ func (s OAuthSession) RevokeToken() error {
 	return nil
 }
 
-func (s OAuthSession) Me() (*Redditor, error) {
+func (s *OAuthSession) Me() (*OARedditor, error) {
 	req := &oauthRequest{
 		accessToken: s.accessToken,
-		url:         "https://oauth.reddit.com/api/v1/me",
+		url:         OAUTH_BASE_URL + "/api/v1/me",
 		useragent:   s.useragent,
 	}
 	body, err := req.getResponse()
@@ -143,14 +146,44 @@ func (s OAuthSession) Me() (*Redditor, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Data Redditor
+	oresp := &OARedditor{}
+	log.Println(body.String())
+	err = json.NewDecoder(body).Decode(oresp)
+	if err != nil {
+		return nil, err
 	}
-	r := &Response{}
-	err = json.NewDecoder(body).Decode(r)
+	// put the session in it
+	oresp.session = s
+
+	return oresp, nil
+}
+
+func (s *OAuthSession) User(username string) (*OARedditor, error) {
+	req := &oauthRequest{
+		accessToken: s.accessToken,
+		url:         ourl("/user/%s/about", username),
+		useragent:   s.useragent,
+	}
+	body, err := req.getResponse()
 	if err != nil {
 		return nil, err
 	}
 
-	return &r.Data, nil
+	type Resp struct {
+		Kind string     `json:"kind"`
+		Data OARedditor `json:"data"`
+	}
+
+	oresp := &Resp{}
+	log.Println(body.String())
+	err = json.NewDecoder(body).Decode(oresp)
+	if err != nil {
+		return nil, err
+	}
+	// put the session in it
+	oresp.Data.session = s
+
+	log.Println(oresp.Data.String())
+
+	return &oresp.Data, nil
 }
